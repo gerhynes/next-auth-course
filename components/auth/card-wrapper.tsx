@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
-import BackButton from "@/components/auth/back-button";
+import { BackButton } from "@/components/auth/back-button";
 import { Header } from "@/components/auth/header";
 import { Social } from "@/components/auth/social";
 
