@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { UserRole } from "@prisma/client";
+import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confimration";
 
 declare module "@auth/core" {
   interface Session {
@@ -40,9 +41,18 @@ export const {
 
       if (!existingUser?.emailVerified) return false;
 
-      // TODO Add 2FA check
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
+        );
 
-      // Timestamp 20:11
+        if (!twoFactorConfirmation) return false;
+
+        // Delete 2FA confirmation for next sign in
+        await db.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id },
+        });
+      }
 
       return true;
     },
