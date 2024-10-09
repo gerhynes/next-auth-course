@@ -38,9 +38,13 @@ export const {
       // Allow OAuth without email verification
       if (account?.provider !== "credentials") return true;
 
+      if (!user.id) {
+        return false;
+      }
+
       const existingUser = await getUserById(user.id);
 
-      if (!existingUser?.emailVerified) return false;
+      if (!existingUser || !existingUser?.emailVerified) return false;
 
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
@@ -72,7 +76,7 @@ export const {
 
       if (session.user) {
         session.user.name = token.name;
-        session.user.email = token.email;
+        session.user.email = token.email!;
         session.user.isOAuth = token.isOAuth as boolean;
       }
 
